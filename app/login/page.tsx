@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { ArrowLeftIcon } from "lucide-react"
 import { LoginForm } from "@/components/LoginForm"
@@ -14,7 +15,9 @@ export default function LoginPage() {
           Tilbake
         </Link>
 
-        <LoginForm />
+        <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   )
