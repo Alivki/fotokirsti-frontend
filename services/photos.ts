@@ -62,8 +62,12 @@ export const createPhotos = async (photos: CreatePhotoPayload[]) => {
 }
 
 /** Client-side: uses axios withCredentials (browser sends cookies) */
-export const getGalleryPhotos = async (category?: string) => {
-  const { data } = await api.get("/photos", { params: { category } })
+export const getGalleryPhotos = async (
+  category?: string
+): Promise<PhotoWithUrl[]> => {
+  const { data } = await api.get<PhotoWithUrl[]>("/photos", {
+    params: { category },
+  })
   return data
 }
 
