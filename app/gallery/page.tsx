@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
@@ -7,7 +8,7 @@ import { CategoryFilter } from "@/components/CategoryFilter"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getGalleryPhotos } from "@/services/photos"
 
-export default function Gallery() {
+function GalleryContent() {
   const searchParams = useSearchParams()
   const category = searchParams.get("category") ?? undefined
   const { data: photos, isLoading } = useQuery({
@@ -55,5 +56,24 @@ export default function Gallery() {
         ))}
       </div>
     </div>
+  )
+}
+
+export default function Gallery() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-4">
+          <div className="h-9" />
+          <div className="grid grid-cols-3 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-lg" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <GalleryContent />
+    </Suspense>
   )
 }
