@@ -13,6 +13,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
+import { useAuth } from "@/services/auth"
 import {
   Sidebar,
   SidebarContent,
@@ -24,11 +25,6 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "Iver",
-    email: "iverlindholm@icloud.com",
-    avatar: "/assets/logo-fotokirsti.png",
-  },
   navMain: [
     {
       title: "Legg til bilder",
@@ -68,6 +64,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth()
+  const navUser = user
+    ? {
+        name: (user as { name?: string }).name ?? user.username,
+        email: (user as { email?: string }).email ?? "",
+        avatar: (user as { image?: string }).image ?? "/assets/logo-fotokirsti.png",
+      }
+    : null
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -93,9 +98,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      {navUser && (
+        <SidebarFooter>
+          <NavUser user={navUser} />
+        </SidebarFooter>
+      )}
     </Sidebar>
   )
 }
