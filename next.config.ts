@@ -7,9 +7,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination: `${apiUrl}/:path*`,
-      },
+        source: '/api/:path*',
+        destination: 'https://fotokirsti-backend-production.up.railway.app/api/:path*'
+      }
     ]
   },
   images: {
