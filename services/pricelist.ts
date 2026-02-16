@@ -60,3 +60,8 @@ export const deleteManyPricelists = async (ids: string[]) => {
   const { data } = await api.delete("/pricelist", { data: { ids } })
   return data
 }
+
+export const setActivePricelist = async (id: string): Promise<PricelistWithUrl> => {
+  const { data } = await api.patch<PricelistWithUrl>(`/pricelist/setActive/${id}`)
+  return data
+}

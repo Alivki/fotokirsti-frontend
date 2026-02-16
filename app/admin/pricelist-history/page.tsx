@@ -12,6 +12,7 @@ import { PricelistHistoryTable } from "@/components/admin/PricelistHistoryTable"
 import {
   getPricelistHistory,
   deleteManyPricelists,
+  setActivePricelist,
   PRICELIST_QUERY_KEY,
   PRICELIST_HISTORY_QUERY_KEY,
   type PricelistWithUrl,
@@ -39,6 +40,20 @@ export default function PricelistHistoryPage() {
   useEffect(() => {
     if (error) toast.error(getErrorMessage(error))
   }, [error])
+
+  const setActiveMutation = useMutation({
+    mutationFn: setActivePricelist,
+    onSuccess: () => {
+      toast.success("Prislisten er satt som aktiv")
+    },
+    onError: (err) => {
+      toast.error(getErrorMessage(err))
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PRICELIST_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: PRICELIST_HISTORY_QUERY_KEY })
+    },
+  })
 
   const deleteManyMutation = useMutation({
     mutationFn: deleteManyPricelists,
@@ -98,9 +113,11 @@ export default function PricelistHistoryPage() {
 
       <div className="flex flex-col gap-4 p-4">
         <PricelistHistoryTable
-          data={history}
+          data={[...history].sort((a, b) => Number(b.isActive) - Number(a.isActive))}
           onDeleteSelected={(ids) => deleteManyMutation.mutate(ids)}
+          onSetActive={(id) => setActiveMutation.mutate(id)}
           isDeleting={deleteManyMutation.isPending}
+          isSettingActive={setActiveMutation.isPending}
           hasCurrentPricelist
           showSeparator={false}
         />

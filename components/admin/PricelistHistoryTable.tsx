@@ -18,7 +18,7 @@ import {
   type ColumnDef,
   type RowSelectionState,
 } from "@tanstack/react-table"
-import { File, FileStack, Trash2 } from "lucide-react"
+import { File, FileStack, Trash2, CheckCircle2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
@@ -28,7 +28,9 @@ import { cn } from "@/lib/utils"
 interface PricelistHistoryTableProps {
   data: PricelistWithUrl[]
   onDeleteSelected: (ids: string[]) => void
+  onSetActive?: (id: string) => void
   isDeleting: boolean
+  isSettingActive?: boolean
   hasCurrentPricelist?: boolean
   showSeparator?: boolean
 }
@@ -36,7 +38,9 @@ interface PricelistHistoryTableProps {
 export function PricelistHistoryTable({
   data,
   onDeleteSelected,
+  onSetActive,
   isDeleting,
+  isSettingActive = false,
   hasCurrentPricelist = true,
   showSeparator = true,
 }: PricelistHistoryTableProps) {
@@ -59,15 +63,17 @@ export function PricelistHistoryTable({
           className="translate-y-0.5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 data-[state=checked]:text-white data-[state=indeterminate]:bg-blue-500 data-[state=indeterminate]:border-blue-500 data-[state=indeterminate]:text-white"
         />
       ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Velg rad"
-          className="translate-y-0.5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-          disabled={row.original.isActive}
-        />
-      ),
+      cell: ({ row }) =>
+        row.original.isActive ? (
+          <div className="size-4" aria-hidden />
+        ) : (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Velg rad"
+            className="translate-y-0.5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+          />
+        ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -137,6 +143,10 @@ export function PricelistHistoryTable({
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedIds = selectedRows.map((r) => r.original.id)
   const hasSelection = selectedIds.length > 0
+  const singleInactiveSelected =
+    onSetActive &&
+    selectedIds.length === 1 &&
+    !selectedRows[0]?.original.isActive
 
   const handleDeleteClick = () => {
     if (hasSelection) setShowDeleteConfirm(true)
@@ -183,16 +193,33 @@ export function PricelistHistoryTable({
           Tidligere prislister
         </h3>
         {hasSelection ? (
-          <Button
-            variant="destructiveOutline"
-            size="xsm"
-            className="min-w-auto"
-            onClick={handleDeleteClick}
-            isLoading={isDeleting}
-          >
-            <Trash2 size={14} />
-            Slett valgte ({selectedIds.length})
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructiveOutline"
+              size="xsm"
+              className="min-w-auto"
+              onClick={handleDeleteClick}
+              isLoading={isDeleting}
+            >
+              <Trash2 size={14} />
+              Slett valgte ({selectedIds.length})
+            </Button>
+            {singleInactiveSelected && (
+              <Button
+                variant="outline"
+                size="xsm"
+                className="min-w-auto"
+                onClick={() => {
+                  onSetActive(selectedIds[0])
+                  setRowSelection({})
+                }}
+                disabled={isSettingActive}
+              >
+                <CheckCircle2 size={14} />
+                Gjør aktiv
+              </Button>
+            )}
+          </div>
         ) : (
           <div className="h-9" aria-hidden />
         )}
@@ -252,7 +279,7 @@ export function PricelistHistoryTable({
                   <tr
                     key={row.id}
                     className={cn(
-                      "border-b border-border transition-colors last:border-b-0",
+                      "border-b border-border last:border-b-0",
                       row.getIsSelected() && "bg-blue-500/10",
                       row.original.isActive && "bg-muted/30"
                     )}
@@ -316,7 +343,7 @@ export function PricelistHistoryTable({
                         className="translate-y-0 shrink-0 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                       />
                     ) : (
-                      <div className="w-4 shrink-0" />
+                      <div className="size-4 shrink-0" aria-hidden />
                     )}
                     <a
                       href={item.fileUrl}
@@ -412,7 +439,7 @@ export function PricelistHistoryTable({
                           Aktiv
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                        <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">
                           Tidligere
                         </span>
                       )}
