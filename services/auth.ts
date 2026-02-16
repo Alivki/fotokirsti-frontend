@@ -47,8 +47,14 @@ export function useLogin(redirectTo?: string) {
   return async (username: string, password: string): Promise<{ error?: string }> => {
     try {
       await api.post("auth/sign-in/username", { username, password })
+
+      const { data: sessionData } = await api.get("/auth/get-session")
+
+      if (!sessionData?.user) {
+        return { error: "Innlogging fullført, men sesjon ble ikke opprettet. Sjekk tredjeparts cookies i nettleseren." }
+      }
+      queryClient.setQueryData(["auth", "session"], sessionData)
       // Refetch session so cache is populated before we navigate (avoids AdminGuard redirecting back to login)
-      await queryClient.refetchQueries({ queryKey: ["auth", "session"] })
       const target = redirectTo?.startsWith("/") ? redirectTo : "/admin"
       router.push(target)
       return {}
