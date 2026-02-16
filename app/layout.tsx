@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "Fotokirsti",
     locale: "nb_NO",
     type: "website",
-    images: ["/favicon.ico"],
+    // og:image from app/opengraph-image.tsx (dynamic grid of photos + logo)
   },
   twitter: {
     card: "summary_large_image",
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: "/assets/logo-fotokirsti.png",
+    apple: "/assets/logo-fotokirsti.png",
   },
 };
 

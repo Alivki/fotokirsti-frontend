@@ -1,0 +1,93 @@
+{
+  "history": {
+    "1": {
+      "title": "Tok svennebrev i fotograffaget",
+      "date": "1994",
+      "hasDescription": true,
+      "description": "Dette er en lang beskrivelse om når fotograf kirsti Hovde to svennebrev i fotograffaget.",
+      "hasImage": false,
+      "hasButton": false,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "", "link": "" }
+    },
+    "2": {
+      "title": "Ble ansatt som fotograf hos FotoOlsen på Lillehammer",
+      "date": "1998",
+      "description": "",
+      "hasDescription": false,
+      "hasImage": false,
+      "hasButton": false,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "", "link": "" }
+    },
+    "3": {
+      "title": "Startet egen bedrift i de samme lokalene i Storgata 71",
+      "date": "2004",
+      "description": "",
+      "hasDescription": false,
+      "hasImage": true,
+      "hasButton": false,
+      "url": "/assets/interior.jpg",
+      "imageAlt": "Image from Kirstis first studio",
+      "button": { "description": "", "link": "" }
+    },
+    "4": {
+      "title": "Fikk Årets bilde i kategorien familie/gruppe Landskonkurransen NFF",
+      "date": "2009",
+      "description": "",
+      "hasDescription": false,
+      "hasImage": false,
+      "hasButton": true,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "Se mine premierte bilder", "link": "/gallery?category=premierte+bilder" }
+    },
+    "5": {
+      "title": "Flyttet studioet til Mesnadalsvegen 2",
+      "date": "2012",
+      "description": "Dette er en lang beskrivelse om når fotograf kirsti Hovde to svennebrev i fotograffaget.",
+      "hasDescription": true,
+      "hasImage": true,
+      "hasButton": true,
+      "url": "/assets/exterior.jpg",
+      "imageAlt": "Image from Kirstis studio",
+      "button": { "description": "Les mer", "link": "/" }
+    },
+    "6": {
+      "title": "Ble Årets fotograf i Landskonkurransen NFF",
+      "date": "2015",
+      "description": "",
+      "hasDescription": false,
+      "hasImage": false,
+      "hasButton": true,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "Se mine premierte bilder", "link": "/gallery?category=premierte+bilder" }
+    },
+    "7": {
+      "title": "Fikk Årets bilde i kategorien portrett i Landskonkurransen NFF",
+      "date": "2019",
+      "description": "This is a description for the win of landskonkurransen",
+      "hasDescription": true,
+      "hasImage": false,
+      "hasButton": true,
+      "hasTrophy": true,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "Se mine premierte bilder", "link": "/gallery?category=premierte+bilder" }
+    },
+    "8": {
+      "title": "30-årsjubileum som fotograf!",
+      "date": "2024",
+      "description": "",
+      "hasDescription": false,
+      "hasImage": false,
+      "hasButton": false,
+      "url": "",
+      "imageAlt": "",
+      "button": { "description": "", "link": "" }
+    }
+  }
+}
