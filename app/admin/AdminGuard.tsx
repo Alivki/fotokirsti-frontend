@@ -53,8 +53,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
           Kunne ikke kontakte serveren
         </p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Sjekk at backend kjører på localhost:4000 og prøv å laste siden på
-          nytt.
+          Sjekk internettilkoblingen din og prøv å laste siden på nytt.
         </p>
         <button
           type="button"

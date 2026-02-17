@@ -42,7 +42,11 @@ export default async function Page({ searchParams }: PageProps) {
   if (hasPrizeParam === "true") filters.hasPrize = true
   if (hasPrizeParam === "false") filters.hasPrize = false
 
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { gcTime: 0, staleTime: 0 }, // Server: no cache retention between requests
+    },
+  });
   try {
     await queryClient.prefetchQuery({
       queryKey: [...ADMIN_PHOTOS_QUERY_KEY, filters],

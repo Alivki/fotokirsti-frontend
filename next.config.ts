@@ -1,16 +1,20 @@
 import type { NextConfig } from "next";
 
-const apiUrl =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"
+// Backend origin for API proxy. Set NEXT_PUBLIC_BACKEND_URL in prod (e.g. https://your-backend.railway.app).
+const backendOrigin =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  output: "standalone",
+  poweredByHeader: false,
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'https://fotokirsti-backend-production.up.railway.app/api/:path*'
-      }
-    ]
+        source: "/api/:path*",
+        destination: `${backendOrigin}/api/:path*`,
+      },
+    ];
   },
   images: {
     remotePatterns: [

@@ -1,11 +1,8 @@
-import axios from "axios"
+import axios from "axios";
 
-// Use backend URL when set (prod); otherwise /api (local proxy)
-const baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"
-
+// /api is proxied to backend via Next.js rewrites (see next.config.ts)
 const api = axios.create({
-    baseURL: '/api',
+  baseURL: "/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
