@@ -6,7 +6,6 @@ const backendOrigin =
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: "standalone",
   poweredByHeader: false,
   async rewrites() {
     return [
