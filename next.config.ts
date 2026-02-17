@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
-// Backend origin for API proxy. Set NEXT_PUBLIC_BACKEND_URL in prod (e.g. https://your-backend.railway.app).
+// Backend origin for API proxy. Default: production URL (Railway). Override with NEXT_PUBLIC_BACKEND_URL for local dev (http://localhost:4000).
 const backendOrigin =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL || "https://localhost:4000/api";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `${backendOrigin}/api/:path*`,
+        destination: `${backendOrigin}/:path*`,
       },
     ];
   },
