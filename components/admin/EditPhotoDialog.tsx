@@ -83,7 +83,7 @@ export function EditPhotoDialog({
         alt: photo.alt ?? "",
         category: validCategory,
         published: photo.published ?? true,
-        hasPrize: photo.hasPrize ?? false,
+        hasPrize: photo.hasPrize ?? !!(photo.prizeTitle || photo.prizeMedal),
         prizeTitle: photo.prizeTitle ?? null,
         prizeMedal: photo.prizeMedal ?? null,
       })
