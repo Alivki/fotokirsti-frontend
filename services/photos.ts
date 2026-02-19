@@ -3,20 +3,33 @@ import { api } from "./axios"
 export const PHOTOS_QUERY_KEY = ["photos"] as const
 export const ADMIN_PHOTOS_QUERY_KEY = ["photos", "admin"] as const
 
-/** Photo shape returned from GET /photos (includes presigned imageUrl) */
+/** Photo shape returned from GET /photos. Backend returns: id, title, alt, category, prizeTitle, prizeMedal, width, height, aspectRatio, createdAt, updatedAt, plus imageUrl (computed). */
 export interface PhotoWithUrl {
   id: string
-  s3Key: string
-  imageUrl: string
   title?: string | null
   alt?: string | null
   category?: string | null
-  published?: boolean
-  hasPrize?: boolean
   prizeTitle?: string | null
   prizeMedal?: "Gull" | "Sølv" | "Bronse" | "Hederlig omtale" | null
+  width?: number | null
+  height?: number | null
+  aspectRatio?: number | null
   createdAt?: string
+  updatedAt?: string
+  /** Computed by backend from id (CloudFront URL). Required for display. */
+  imageUrl: string
+  /** Not returned by photo select; optional for compatibility. */
+  s3Key?: string
+  /** Not in current select; derive from prizeTitle/prizeMedal if needed. */
+  published?: boolean
+  /** Not in current select; derive from prizeTitle/prizeMedal if needed. */
+  hasPrize?: boolean
   [key: string]: unknown
+}
+
+/** Derive hasPrize when not returned by API */
+export function getHasPrize(photo: PhotoWithUrl): boolean {
+  return photo.hasPrize ?? !!(photo.prizeTitle || photo.prizeMedal)
 }
 
 /** Response shape from POST /photos/upload-urls */
@@ -58,6 +71,33 @@ export const getUploadUrls = async (
 
 export const createPhotos = async (photos: CreatePhotoPayload[]) => {
   const { data } = await api.post("/photos", { photos })
+  return data
+}
+
+/** Paginated gallery response from GET /photos */
+export interface GalleryResponse {
+  data: PhotoWithUrl[]
+  metadata: {
+    total: number
+    limit: number
+    page: number
+    totalPages: number
+    hasNext: boolean
+  }
+}
+
+/** Client-side: fetch paginated gallery photos (category, hasPrize, page, limit) */
+export const getGalleryPhotosPaginated = async (
+  params: { category?: string; hasPrize?: boolean; page?: number; limit?: number } = {}
+): Promise<GalleryResponse> => {
+  const { data } = await api.get<GalleryResponse>("/photos", {
+    params: {
+      category: params.category || undefined,
+      hasPrize: params.hasPrize === true ? "true" : undefined,
+      page: params.page ?? 1,
+      limit: params.limit ?? 50,
+    },
+  })
   return data
 }
 

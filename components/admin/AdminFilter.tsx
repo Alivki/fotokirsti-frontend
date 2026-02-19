@@ -28,7 +28,7 @@ export function useAdminPhotoFilters(): AdminPhotosFilters {
 export function AdminFilter() {
   return (
     <div className="flex flex-col gap-4">
-      <CategoryFilter />
+      <CategoryFilter variant="admin" />
       <div className="flex flex-wrap gap-6">
         <TristateFilter
           param="hasPrize"

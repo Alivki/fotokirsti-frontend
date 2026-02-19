@@ -22,7 +22,13 @@ export function Footer() {
                                 href="/"
                                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                             >
-                                Home
+                                Hjem
+                            </Link>
+                            <Link
+                                href="/gallery"
+                                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                                Galleri
                             </Link>
                             <Link
                                 href="/login"

@@ -27,6 +27,7 @@ import { EditPhotoDialog } from "@/components/admin/EditPhotoDialog"
 import {
   deletePhoto,
   getAdminPhotos,
+  getHasPrize,
   ADMIN_PHOTOS_QUERY_KEY,
   type AdminPhotosFilters,
   type PhotoWithUrl,
@@ -172,7 +173,7 @@ export function PhotosGrid({
                               {photo.title}
                             </p>
                           )}
-                          {photo.hasPrize && photo.prizeMedal && (
+                          {getHasPrize(photo) && photo.prizeMedal && (
                             <p className="mt-2 inline-block max-w-full truncate rounded bg-white px-2 py-[0.5px] text-[12px] text-muted-foreground">
                               {MEDALS.find((m) => m.value === photo.prizeMedal)
                                 ?.label}{" "}
@@ -181,7 +182,7 @@ export function PhotosGrid({
                           )}
                         </div>
                       </div>
-                      {photo.hasPrize && photo.prizeMedal && (
+                      {getHasPrize(photo) && photo.prizeMedal && (
                         <p className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[12px]">
                           {MEDALS.find((m) => m.value === photo.prizeMedal)
                             ?.label ?? ""}
