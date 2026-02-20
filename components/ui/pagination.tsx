@@ -58,7 +58,9 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
-        className
+        className,
+        isActive && "hover:shadow-none shadow-none border-1 border-gray-300",
+        "hover:bg-gray-200 rounded-lg"
       )}
       {...props}
     />
