@@ -3,7 +3,7 @@
 import { Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { CategoryFilter } from "@/components/CategoryFilter"
+import { PublicCategoryFilter } from "@/components/PublicCategoryFilter"
 import { PublicGallery } from "@/components/PublicGallery"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -32,7 +32,7 @@ function GalleryContent() {
     : undefined
   const hasPrize = searchParams.get("hasPrize") === "true"
   const page = Number(searchParams.get("page")) || 1
-  const limit = 50
+  const limit = 10
 
   const { data, isLoading } = useQuery({
     queryKey: ["gallery", category, hasPrize, page, limit],
@@ -53,7 +53,7 @@ function GalleryContent() {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
-        <CategoryFilter variant="public" />
+        <PublicCategoryFilter />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {Array.from({ length: 12 }).map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-lg" />
@@ -71,7 +71,7 @@ function GalleryContent() {
   if (!photos.length) {
     return (
       <div className="flex flex-col gap-4">
-        <CategoryFilter variant="public" />
+        <PublicCategoryFilter />
         <p className="text-muted-foreground">Ingen bilder</p>
       </div>
     )
@@ -79,7 +79,7 @@ function GalleryContent() {
 
   return (
     <div className="flex flex-col gap-6">
-      <CategoryFilter variant="public" />
+      <PublicCategoryFilter />
       <PublicGallery photos={photos} />
       {totalPages > 1 && (
         <Pagination>

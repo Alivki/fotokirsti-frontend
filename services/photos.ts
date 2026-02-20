@@ -129,14 +129,19 @@ export interface AdminPhotosFilters {
   hasPrize?: boolean
 }
 
+/** Response shape from GET /photos/admin */
+export interface AdminPhotosResponse {
+  photos: PhotoWithUrl[]
+}
+
 /** Client-side: fetch admin photos with filters (uses axios withCredentials) */
 export async function getAdminPhotos(filters?: AdminPhotosFilters): Promise<PhotoWithUrl[]> {
   const params: Record<string, string> = {}
   if (filters?.category?.trim()) params.category = filters.category.trim()
   if (filters?.published !== undefined) params.published = String(filters.published)
   if (filters?.hasPrize !== undefined) params.hasPrize = String(filters.hasPrize)
-  const { data } = await api.get<PhotoWithUrl[]>("/photos/admin", { params })
-  return data
+  const { data } = await api.get<AdminPhotosResponse>("/photos/admin", { params })
+  return data.photos ?? []
 }
 
 /** Server-side: fetch admin photos with filters (forwards cookies, cache-friendly) */
@@ -150,11 +155,11 @@ export async function getAdminPhotosServer(
   if (filters?.category?.trim()) params.category = filters.category.trim()
   if (filters?.published !== undefined) params.published = String(filters.published)
   if (filters?.hasPrize !== undefined) params.hasPrize = String(filters.hasPrize)
-  const { data } = await api.get<PhotoWithUrl[]>("/photos/admin", {
+  const { data } = await api.get<AdminPhotosResponse>("/photos/admin", {
     params,
     headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
   })
-  return data
+  return data.photos ?? []
 }
 
 /** Matches backend PATCH /photos/:id body schema */

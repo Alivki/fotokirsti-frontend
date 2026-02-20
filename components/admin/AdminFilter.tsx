@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { CategoryFilter } from "@/components/CategoryFilter"
+import { AdminCategoryFilter } from "@/components/AdminCategoryFilter"
 import { TristateFilter } from "@/components/TristateFilter"
 import type { AdminPhotosFilters } from "@/services/photos"
 
@@ -28,7 +28,7 @@ export function useAdminPhotoFilters(): AdminPhotosFilters {
 export function AdminFilter() {
   return (
     <div className="flex flex-col gap-4">
-      <CategoryFilter variant="admin" />
+      <AdminCategoryFilter />
       <div className="flex flex-wrap gap-6">
         <TristateFilter
           param="hasPrize"

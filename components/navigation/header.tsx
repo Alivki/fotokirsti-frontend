@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 
 export function Header() {
   const pathname = usePathname()
+
   return (
     <header className="top-0 z-50 w-full border-b border-border bg-white backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
