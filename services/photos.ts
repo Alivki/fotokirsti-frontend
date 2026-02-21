@@ -77,25 +77,24 @@ export const createPhotos = async (photos: CreatePhotoPayload[]) => {
 /** Paginated gallery response from GET /photos */
 export interface GalleryResponse {
   data: PhotoWithUrl[]
-  metadata: {
-    total: number
-    limit: number
-    page: number
-    totalPages: number
-    hasNext: boolean
-  }
+  totalCount: number
+  pages: number
+  nextPage: number | null
 }
 
-/** Client-side: fetch paginated gallery photos (category, hasPrize, page, limit) */
+/** Client-side: fetch paginated gallery photos (category, hasPrize, page, pageSize).
+ * page: 0-based for API (backend uses 0-based). Pass 1-based from URL and we convert. */
 export const getGalleryPhotosPaginated = async (
-  params: { category?: string; hasPrize?: boolean; page?: number; limit?: number } = {}
+  params: { category?: string; hasPrize?: boolean; page?: number; pageSize?: number } = {}
 ): Promise<GalleryResponse> => {
+  const page = params.page ?? 1
+  const pageSize = params.pageSize ?? 50
   const { data } = await api.get<GalleryResponse>("/photos", {
     params: {
       category: params.category || undefined,
       hasPrize: params.hasPrize === true ? "true" : undefined,
-      page: params.page ?? 1,
-      limit: params.limit ?? 50,
+      page: page - 1, // backend uses 0-based
+      pageSize,
     },
   })
   return data
