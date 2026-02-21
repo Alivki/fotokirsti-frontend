@@ -154,14 +154,14 @@ export function PublicGallery({ photos }: PublicGalleryProps) {
             {/* Image + counter */}
             <div className="order-2 flex flex-col items-center pb-6">
               <div
-                className="relative flex max-h-[90vh] max-w-[90vw] select-none items-center justify-center"
+                className="relative flex max-h-[85dvh] max-w-[85vw] select-none items-center justify-center sm:max-h-[90vh] sm:max-w-[90vw]"
                 onContextMenu={(e) => e.preventDefault()}
               >
                 <img
                   src={currentPhoto.imageUrl}
                   alt={currentPhoto.alt ?? currentPhoto.title ?? ""}
-                  className="max-h-[90vh] max-w-[90vw] select-none rounded-md object-contain"
-                  style={{ maxHeight: "90vh", maxWidth: "90vw", userSelect: "none", pointerEvents: "none" }}
+                  className="max-h-[90dvh] max-w-[90vw] select-none rounded-md object-contain sm:max-h-[95vh] sm:max-w-[95vw]"
+                  style={{ userSelect: "none", pointerEvents: "none" }}
                   draggable={false}
                   onContextMenu={(e) => e.preventDefault()}
                 />
@@ -170,8 +170,8 @@ export function PublicGallery({ photos }: PublicGalleryProps) {
               <p className="hidden pt-2 text-sm text-white sm:block">
                 {currentIndex + 1} / {validPhotos.length}
               </p>
-              {/* Mobile: prev, counter, next row - arrows far left/right, text middle, under image */}
-              <div className="flex w-full max-w-[90vw] items-center justify-between pt-4 sm:hidden">
+              {/* Mobile: prev, counter, next row - arrows right under image */}
+              <div className="flex w-full max-w-[90vw] items-center justify-between pt-2 sm:hidden">
                 <Button
                   variant="secondary"
                   size="icon-sm"

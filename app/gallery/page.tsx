@@ -85,9 +85,9 @@ function GalleryContent() {
           </div>
         </FadeContent>
         <FadeContent duration={1000}>
-          <div className="flex flex-col gap-4">
+          <div className="flex w-full flex-col gap-4">
             <PublicCategoryFilter />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className="skeleton h-64 w-full rounded-lg" />
               ))}
@@ -110,7 +110,7 @@ function GalleryContent() {
           </div>
         </FadeContent>
         <FadeContent duration={1000}>
-          <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+          <div className="flex w-full flex-col gap-6">
             <PublicCategoryFilter />
             <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-secondary/50 py-16 px-6 text-center sm:py-24">
               <div className="mb-4 rounded-full bg-muted p-4">
@@ -140,7 +140,7 @@ function GalleryContent() {
         </div>
       </FadeContent>
       <FadeContent duration={1000}>
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           <div className="flex flex-col gap-4">
             <PublicCategoryFilter />
           <PublicGallery photos={photos} />
@@ -214,7 +214,7 @@ export default function GalleryPage() {
             fallback={
               <div className="flex flex-col gap-4">
                 <div className="h-9" />
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <div key={i} className="skeleton h-64 w-full rounded-lg" />
                   ))}
