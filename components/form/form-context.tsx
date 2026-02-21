@@ -5,6 +5,7 @@ import { CheckboxField } from "@/components/form/checkbox-field"
 import { PasswordField } from "@/components/form/password-field"
 import { SelectField } from "@/components/form/select-field"
 import { TextField } from "@/components/form/text-field"
+import { TextareaField } from "@/components/form/textarea-field"
 import { SubmitButton } from "@/components/form/submit-button"
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -18,6 +19,7 @@ const formHookApi = createFormHook({
         PasswordField,
         SelectField,
         CheckboxField,
+        TextareaField,
     },
     formComponents: {
         SubmitButton,

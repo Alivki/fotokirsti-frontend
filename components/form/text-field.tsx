@@ -13,6 +13,8 @@ interface TextFieldProps {
   placeholder?: string
   type?: string
   icon?: React.ReactNode
+  /** Prefix addon (e.g. "+47" for phone) – shown in InputGroupAddon */
+  prefix?: React.ReactNode
   /** Error message from parent (e.g. schema validation) – shown like validator errors with red border */
   externalError?: string
 }
@@ -22,6 +24,7 @@ export function TextField({
   placeholder,
   type = "text",
   icon,
+  prefix,
   externalError,
 }: TextFieldProps) {
   const field = useFieldContext<string>()
@@ -36,9 +39,9 @@ export function TextField({
     <Field data-invalid={hasError || undefined}>
       <FieldLabel>{label}</FieldLabel>
       <InputGroup>
-        {icon && (
+        {(icon || prefix) && (
           <InputGroupAddon align="inline-start">
-            <InputGroupText>{icon}</InputGroupText>
+            <InputGroupText>{icon ?? prefix}</InputGroupText>
           </InputGroupAddon>
         )}
         <InputGroupInput
