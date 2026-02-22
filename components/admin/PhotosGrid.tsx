@@ -52,6 +52,8 @@ interface PhotosGridProps {
   selectedIds: Set<string>
   isEditing: boolean
   onToggleSelect: (id: string) => void
+  /** Disable selection during delete/publish/unpublish (after alert confirm) */
+  selectionDisabled?: boolean
 }
 
 export function PhotosGrid({
@@ -59,6 +61,7 @@ export function PhotosGrid({
   selectedIds,
   isEditing,
   onToggleSelect,
+  selectionDisabled = false,
 }: PhotosGridProps) {
   const queryClient = useQueryClient()
   const { data: photos = [], isLoading, isError } = useAdminPhotosQuery(filters)
@@ -142,10 +145,12 @@ export function PhotosGrid({
               </div>
             ) : photos.map((photo) => (
                 <ContextMenu key={photo.id}>
-                  <ContextMenuTrigger asChild disabled={isEditing}>
+                  <ContextMenuTrigger asChild disabled={isEditing || selectionDisabled}>
                     <div
                       className="group relative aspect-square w-full select-none overflow-hidden rounded-lg bg-muted shadow transition-all duration-200 hover:scale-[1.05] hover:shadow-lg"
-                      onClick={() => isEditing && onToggleSelect(photo.id)}
+                      onClick={() =>
+                        isEditing && !selectionDisabled && onToggleSelect(photo.id)
+                      }
                     >
                       {isEditing && (
                         <div
@@ -154,13 +159,16 @@ export function PhotosGrid({
                         >
                           <Checkbox
                             checked={selectedIds.has(photo.id)}
-                            onCheckedChange={() => onToggleSelect(photo.id)}
+                            disabled={selectionDisabled || deleteMutation.isPending}
+                            onCheckedChange={() =>
+                              !selectionDisabled && !deleteMutation.isPending && onToggleSelect(photo.id)
+                            }
                             className="size-5 shrink-0 rounded-full border-2 border-white/80 bg-black/50 data-[state=checked]:border-blue-500 data-[state=checked]:bg-blue-500 data-[state=indeterminate]:border-blue-500 data-[state=indeterminate]:bg-blue-500"
                           />
                         </div>
                       )}
                       <Image
-                        src={photo.imageUrl}
+                        src={(photo.imageUrl ?? photo.previewUrl) ?? ""}
                         alt={photo.alt ?? photo.title ?? "Bilde"}
                         width={200}
                         height={200}

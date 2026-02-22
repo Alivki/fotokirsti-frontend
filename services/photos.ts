@@ -3,7 +3,7 @@ import { api } from "./axios"
 export const PHOTOS_QUERY_KEY = ["photos"] as const
 export const ADMIN_PHOTOS_QUERY_KEY = ["photos", "admin"] as const
 
-/** Photo shape returned from GET /photos. Backend returns: id, title, alt, category, prizeTitle, prizeMedal, width, height, aspectRatio, createdAt, updatedAt, plus imageUrl (computed). */
+/** Photo shape returned from GET /photos. Backend returns: id, title, alt, category, prizeTitle, prizeMedal, width, height, aspectRatio, createdAt, updatedAt, plus previewUrl, mediumUrl, largeUrl. */
 export interface PhotoWithUrl {
   id: string
   title?: string | null
@@ -16,8 +16,14 @@ export interface PhotoWithUrl {
   aspectRatio?: number | null
   createdAt?: string
   updatedAt?: string
-  /** Computed by backend from id (CloudFront URL). Required for display. */
-  imageUrl: string
+  /** Preview (small) – for gallery grid. Public API. */
+  previewUrl?: string
+  /** Medium res – for lightbox on phone/tablet. Public API. */
+  mediumUrl?: string
+  /** Large res – for lightbox on laptop and up. Public API. */
+  largeUrl?: string
+  /** Image URL – admin API and legacy. Same as preview. */
+  imageUrl?: string
   /** Not returned by photo select; optional for compatibility. */
   s3Key?: string
   /** Not in current select; derive from prizeTitle/prizeMedal if needed. */

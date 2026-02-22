@@ -29,7 +29,7 @@ function getWidthHeight(photo: PhotoWithUrl): { width: number; height: number } 
 }
 
 export function PublicGallery({ photos }: PublicGalleryProps) {
-  const validPhotos = photos.filter((p) => p.imageUrl)
+  const validPhotos = photos.filter((p) => (p.previewUrl ?? p.imageUrl) != null)
   const [currentIndex, setCurrentIndex] = useState<number | null>(null)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -95,7 +95,7 @@ export function PublicGallery({ photos }: PublicGalleryProps) {
                 }}
               >
                 <Image
-                  src={p.imageUrl}
+                  src={p.previewUrl ?? p.imageUrl!}
                   alt={p.alt ?? p.title ?? ""}
                   width={width}
                   height={height}
@@ -152,15 +152,22 @@ export function PublicGallery({ photos }: PublicGalleryProps) {
             ref={containerRef}
           >
             {/* Image + counter */}
-            <div className="order-2 flex flex-col items-center pb-6">
+            <div className="order-2 flex w-full max-w-full flex-col items-center pb-6">
               <div
-                className="relative flex max-h-[85dvh] max-w-[85vw] select-none items-center justify-center sm:max-h-[90vh] sm:max-w-[90vw]"
+                className="relative flex max-h-[85dvh] w-full max-w-[90vw] select-none items-center justify-center sm:max-h-[90vh] sm:max-w-[70vw]"
                 onContextMenu={(e) => e.preventDefault()}
               >
+                {/* Raw img: Next.js Image doesn't support custom srcSet with distinct URLs (medium vs large); we need to serve our CloudFront variants directly. */}
                 <img
-                  src={currentPhoto.imageUrl}
+                  src={currentPhoto.largeUrl ?? currentPhoto.mediumUrl ?? currentPhoto.previewUrl ?? currentPhoto.imageUrl!}
+                  srcSet={
+                    currentPhoto.mediumUrl && currentPhoto.largeUrl
+                      ? `${currentPhoto.mediumUrl} 768w, ${currentPhoto.largeUrl} 1200w`
+                      : undefined
+                  }
+                  sizes={currentPhoto.mediumUrl && currentPhoto.largeUrl ? "(max-width: 768px) 100vw, 70vw" : undefined}
                   alt={currentPhoto.alt ?? currentPhoto.title ?? ""}
-                  className="max-h-[90dvh] max-w-[90vw] select-none rounded-md object-contain sm:max-h-[95vh] sm:max-w-[95vw]"
+                  className="max-h-[85dvh] w-full max-w-[90vw] select-none rounded-md object-contain sm:max-h-[90vh] sm:max-w-[70vw]"
                   style={{ userSelect: "none", pointerEvents: "none" }}
                   draggable={false}
                   onContextMenu={(e) => e.preventDefault()}

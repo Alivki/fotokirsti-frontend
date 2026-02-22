@@ -56,11 +56,8 @@ export function AdminPhotosClient() {
       return { previous }
     },
     onSuccess: (_, ids) => {
-      setSelectedIds((prev) => {
-        const next = new Set(prev)
-        ids.forEach((id) => next.delete(id))
-        return next
-      })
+      setSelectedIds(new Set())
+      setIsEditing(false)
       toast.success(
         ids.length === 1 ? "Bildet ble slettet" : `${ids.length} bilder ble slettet`
       )
@@ -182,11 +179,14 @@ export function AdminPhotosClient() {
       <div className="flex flex-col gap-4 p-4">
         <AdminFilter />
         <PhotosGrid
-        filters={filters}
-        selectedIds={selectedIds}
-        isEditing={isEditing}
-        onToggleSelect={handleToggleSelect}
-      />
+          filters={filters}
+          selectedIds={selectedIds}
+          isEditing={isEditing}
+          onToggleSelect={handleToggleSelect}
+          selectionDisabled={
+            deleteManyMutation.isPending || batchPublishMutation.isPending
+          }
+        />
       </div>
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>

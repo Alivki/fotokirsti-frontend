@@ -142,7 +142,7 @@ export function EditPhotoDialog({
           <div className="px-4 ">
             <div className="relative w-full overflow-hidden rounded-lg bg-muted">
               <Image
-                src={photo.imageUrl}
+                src={photo.imageUrl ?? photo.previewUrl}
                 alt={photo.alt ?? photo.title ?? "Bilde"}
                 width={1920}
                 height={1440}
