@@ -1,6 +1,6 @@
 "use client"
 
-import { SquareMousePointer, X, Trash2, Globe, GlobeLock } from "lucide-react"
+import { SquareMousePointer, X, Trash2, Globe, GlobeLock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -50,11 +50,14 @@ export function AdminPhotosHeader({
             size="xsm"
             title="Slett valgte bilder"
             onClick={onDeleteSelected}
-            disabled={selectedCount === 0}
-            isLoading={isDeleting}
+            disabled={selectedCount === 0 || isDeleting}
             className={cn(editModeResponsive, "!transition-[box-shadow,transform,background-color] duration-200")}
           >
-            <Trash2 className={iconClass} />
+            {isDeleting ? (
+              <Loader2 className={cn(iconClass, "animate-spin")} />
+            ) : (
+              <Trash2 className={iconClass} />
+            )}
             <span className="hidden sm:inline">Slett</span>
           </Button>
           <Button
@@ -63,10 +66,13 @@ export function AdminPhotosHeader({
             title="Publiser valgte bilder"
             onClick={onPublishSelected}
             disabled={selectedCount === 0 || isPublishing}
-            isLoading={isPublishing}
             className={editModeResponsive}
           >
-            <Globe className={iconClass} />
+            {isPublishing ? (
+              <Loader2 className={cn(iconClass, "animate-spin")} />
+            ) : (
+              <Globe className={iconClass} />
+            )}
             <span className="hidden sm:inline">Publiser</span>
           </Button>
           <Button
@@ -77,7 +83,11 @@ export function AdminPhotosHeader({
             disabled={selectedCount === 0 || isPublishing}
             className={editModeResponsive}
           >
-            <GlobeLock className={iconClass} />
+            {isPublishing ? (
+              <Loader2 className={cn(iconClass, "animate-spin")} />
+            ) : (
+              <GlobeLock className={iconClass} />
+            )}
             <span className="hidden sm:inline">Avpubliser</span>
           </Button>
           <Button
