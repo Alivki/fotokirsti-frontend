@@ -1,4 +1,4 @@
-"use client"
+  "use client"
 
 import { SquareMousePointer, X, Trash2, Globe, GlobeLock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
