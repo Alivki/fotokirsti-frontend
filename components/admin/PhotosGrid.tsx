@@ -24,6 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EditPhotoDialog } from "@/components/admin/EditPhotoDialog"
+import { getErrorMessage } from "@/lib/utils"
 import {
   deletePhoto,
   getAdminPhotos,
@@ -77,11 +78,7 @@ export function PhotosGrid({
       setPhotoToDelete(null)
     },
     onError: (err) => {
-      const axiosErr = err as { response?: { data?: { message?: string } } }
-      const msg =
-        axiosErr?.response?.data?.message ??
-        (err instanceof Error ? err.message : "Kunne ikke slette")
-      toast.error(msg)
+      toast.error(getErrorMessage(err) || "Kunne ikke slette")
     },
   })
 

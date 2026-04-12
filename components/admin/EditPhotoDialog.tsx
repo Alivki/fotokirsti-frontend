@@ -30,6 +30,7 @@ import {
   type PhotoWithUrl,
   type UpdatePhotoPayload,
 } from "@/services/photos"
+import { revalidateGallery } from "@/app/actions/revalidate"
 
 const CATEGORIES = [
   "Barn",
@@ -96,6 +97,7 @@ export function EditPhotoDialog({
       updatePhoto(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PHOTOS_QUERY_KEY })
+      void revalidateGallery()
       toast.success("Endringene ble lagret")
       onOpenChange(false)
     },

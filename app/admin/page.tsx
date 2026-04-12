@@ -11,11 +11,12 @@ import {
     type ImageFormValues,
     type PhotoForm,
 } from "@/types/photos"
-import { cn } from "@/lib/utils"
+import { cn, getErrorMessage } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Upload, X } from "lucide-react"
 import { toast } from "sonner"
 import { getUploadUrls, deletePhoto, createPhotos } from "@/services/photos"
+import { revalidateGallery } from "@/app/actions/revalidate"
 import { useUploadPhotos, toPresignedUrl } from "@/hooks/useUploadPhotos"
 
 export default function Page() {
@@ -41,6 +42,15 @@ export default function Page() {
             return
         }
         const presignedUrls = urls.map(toPresignedUrl)
+        try {
+            await uploadFiles(files, presignedUrls)
+        } catch (err) {
+            console.error("Upload to S3 failed", err)
+            toast.error(
+                err instanceof Error ? err.message : "Kunne ikke laste opp filer til S3. Prøv igjen."
+            )
+            return
+        }
         const newPhotos = files.map((file, i) =>
             ({
                 file,
@@ -57,19 +67,11 @@ export default function Page() {
             }) as unknown as PhotoForm
         )
         setPhotos((prev) => [...prev, ...newPhotos])
-        try {
-            await uploadFiles(files, presignedUrls)
-            toast.success(
-                files.length === 1
-                    ? "Bilde lastet opp til S3"
-                    : `${files.length} bilder lastet opp til S3`
-            )
-        } catch (err) {
-            console.error("Upload to S3 failed", err)
-            toast.error(
-                err instanceof Error ? err.message : "Kunne ikke laste opp filer til S3. Prøv igjen."
-            )
-        }
+        toast.success(
+            files.length === 1
+                ? "Bilde lastet opp til S3"
+                : `${files.length} bilder lastet opp til S3`
+        )
     }
 
     const removePhoto = async (index: number) => {
@@ -92,6 +94,7 @@ export default function Page() {
         if (photo.id) {
             try {
                 await deletePhoto(photo.id)
+                void revalidateGallery()
                 toast.success("Bilde slettet")
             } catch (err) {
                 console.error("Delete photo failed", err)
@@ -155,27 +158,14 @@ export default function Page() {
             )
             setPhotos([])
             setFieldErrorsByIndex({})
+            void revalidateGallery()
             toast.success("Opplasting vellykket", {
                 description: `${count} ${count === 1 ? "bildet" : "bilder"} ble lagret`,
             })
         } catch (err: unknown) {
             console.error("Create photos failed", err)
-            const ax = err && typeof err === "object" && "response" in err
-                ? (err as { response?: { data?: unknown }; message?: string })
-                : null
-            const data = ax?.response?.data
-            const dataStr =
-                typeof data === "string"
-                    ? data
-                    : typeof data === "object" && data !== null
-                        ? [data as Record<string, unknown>].flatMap((o) =>
-                            ["message", "error", "detail"].map((k) => (o[k] != null ? String(o[k]) : ""))
-                        ).join(" ")
-                        : ""
-            const message = dataStr || (err instanceof Error ? err.message : "")
-            const isDuplicate =
-                /duplicate|23505|already exists/i.test(message) ||
-                (err instanceof Error && /duplicate|23505|already exists/i.test(err.message))
+            const message = getErrorMessage(err)
+            const isDuplicate = /duplicate|23505|already exists/i.test(message)
             if (isDuplicate) {
                 setPhotos([])
                 setFieldErrorsByIndex({})

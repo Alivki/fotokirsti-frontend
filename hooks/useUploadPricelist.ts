@@ -8,6 +8,7 @@ import {
   type CreatePricelistResponse,
   type PricelistWithUrl,
 } from "@/services/pricelist"
+import { revalidatePricelist } from "@/app/actions/revalidate"
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message
@@ -44,6 +45,7 @@ export function useUploadPricelist() {
       )
       await queryClient.refetchQueries({ queryKey: PRICELIST_QUERY_KEY })
       await queryClient.refetchQueries({ queryKey: PRICELIST_HISTORY_QUERY_KEY })
+      void revalidatePricelist()
     },
     onError: (err) => {
       toast.error(getErrorMessage(err))

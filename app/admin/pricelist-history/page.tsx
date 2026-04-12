@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ArrowLeft } from "lucide-react"
 import { PricelistHistoryTable } from "@/components/admin/PricelistHistoryTable"
+import { PricelistHistoryTableSkeleton } from "@/components/admin/PricelistHistoryTableSkeleton"
 import {
   getPricelistHistory,
   deleteManyPricelists,
@@ -17,6 +18,7 @@ import {
   PRICELIST_HISTORY_QUERY_KEY,
   type PricelistWithUrl,
 } from "@/services/pricelist"
+import { revalidatePricelist } from "@/app/actions/revalidate"
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message
@@ -32,7 +34,7 @@ function getErrorMessage(err: unknown): string {
 export default function PricelistHistoryPage() {
   const queryClient = useQueryClient()
 
-  const { data: history = [], error } = useQuery({
+  const { data: history = [], error, isLoading } = useQuery({
     queryKey: PRICELIST_HISTORY_QUERY_KEY,
     queryFn: getPricelistHistory,
   })
@@ -45,6 +47,7 @@ export default function PricelistHistoryPage() {
     mutationFn: setActivePricelist,
     onSuccess: () => {
       toast.success("Prislisten er satt som aktiv")
+      void revalidatePricelist()
     },
     onError: (err) => {
       toast.error(getErrorMessage(err))
@@ -70,6 +73,7 @@ export default function PricelistHistoryPage() {
     },
     onSuccess: () => {
       toast.success("Prislistene er slettet")
+      void revalidatePricelist()
     },
     onError: (err, _ids, context) => {
       if (context?.previous != null) {
@@ -112,15 +116,19 @@ export default function PricelistHistoryPage() {
       <Separator />
 
       <div className="flex flex-col gap-4 p-4">
-        <PricelistHistoryTable
-          data={[...history].sort((a, b) => Number(b.isActive) - Number(a.isActive))}
-          onDeleteSelected={(ids) => deleteManyMutation.mutate(ids)}
-          onSetActive={(id) => setActiveMutation.mutate(id)}
-          isDeleting={deleteManyMutation.isPending}
-          isSettingActive={setActiveMutation.isPending}
-          hasCurrentPricelist
-          showSeparator={false}
-        />
+        {isLoading ? (
+          <PricelistHistoryTableSkeleton rows={5} />
+        ) : (
+          <PricelistHistoryTable
+            data={[...history].sort((a, b) => Number(b.isActive) - Number(a.isActive))}
+            onDeleteSelected={(ids) => deleteManyMutation.mutate(ids)}
+            onSetActive={(id) => setActiveMutation.mutate(id)}
+            isDeleting={deleteManyMutation.isPending}
+            isSettingActive={setActiveMutation.isPending}
+            hasCurrentPricelist
+            showSeparator={false}
+          />
+        )}
       </div>
     </>
   )

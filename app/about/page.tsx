@@ -1,6 +1,3 @@
-"use client"
-
-import { useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -9,18 +6,16 @@ import { FiYoutube, FiTwitter } from "react-icons/fi"
 
 import { Header } from "@/components/navigation/header"
 import { Footer } from "@/components/navigation/footer"
-import { Button } from "@/components/ui/button"
 import { FadeContent } from "@/components/ui/fade-content"
 import { AnimateContent } from "@/components/ui/animate-content"
 import { SingleImageCarousel } from "@/components/ui/single-image-carousel"
+import { Button } from "@/components/ui/button"
 import { ContactInfo } from "@/app/about/components/contact-info"
 import { HistoryDaisy } from "@/app/about/components/history-daisy"
 
 const STUDIO_IMAGES = ["/assets/exterior.jpg", "/assets/interior.jpg"]
 
 export default function AboutPage() {
-  const containerRef = useRef<HTMLDivElement>(null)
-
   return (
     <>
       <Header />
@@ -40,14 +35,8 @@ export default function AboutPage() {
                 className="h-auto w-full rounded-md object-contain object-top"
               />
               <div className="hidden sm:block lg:hidden">
-                <Button
-                  onClick={() => {
-                    containerRef.current?.scrollIntoView({ behavior: "smooth" })
-                  }}
-                  className="w-full"
-                  size="lg"
-                >
-                  Ta kontakt
+                <Button asChild className="w-full" size="lg">
+                  <a href="#contact">Ta kontakt</a>
                 </Button>
               </div>
             </div>
@@ -116,14 +105,8 @@ export default function AboutPage() {
               </div>
               <AnimateContent delay={200}>
                 <div className="sm:hidden lg:block">
-                  <Button
-                    onClick={() => {
-                      containerRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }}
-                    className="w-full md:w-auto"
-                    size="lg"
-                  >
-                    Ta kontakt
+                  <Button asChild className="w-full md:w-auto" size="lg">
+                    <a href="#contact">Ta kontakt</a>
                   </Button>
                 </div>
               </AnimateContent>
@@ -165,7 +148,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-extrabold lg:text-4xl">
             Se hvor jeg holder til
           </h2>
-          <div ref={containerRef} className="-scroll-mt-[65vh]">
+          <div id="contact" className="-scroll-mt-[65vh]">
             <ContactInfo />
           </div>
         </div>

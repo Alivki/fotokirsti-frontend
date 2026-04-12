@@ -1,4 +1,5 @@
 import { api } from "./axios"
+import { API_BASE_URL } from "@/lib/config"
 
 export const PHOTOS_QUERY_KEY = ["photos"] as const
 export const ADMIN_PHOTOS_QUERY_KEY = ["photos", "admin"] as const
@@ -30,7 +31,6 @@ export interface PhotoWithUrl {
   published?: boolean
   /** Not in current select; derive from prizeTitle/prizeMedal if needed. */
   hasPrize?: boolean
-  [key: string]: unknown
 }
 
 /** Derive hasPrize when not returned by API */
@@ -126,6 +126,37 @@ export async function getPhotosServer(category?: string) {
     headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
   })
   return data
+}
+
+/**
+ * Server-side ISR fetch for the public gallery. Uses native fetch() so
+ * Next.js can cache the response at the edge — many visitors share one
+ * cache hit, and CloudFront URLs are baked into the rendered HTML.
+ *
+ * Cache is tagged with "gallery" so admin mutations can call
+ * revalidateTag("gallery") to bust it instantly on publish/delete.
+ */
+export async function getGalleryPhotosPaginatedISR(params: {
+  category?: string
+  hasPrize?: boolean
+  page?: number
+  pageSize?: number
+}): Promise<GalleryResponse> {
+  const page = params.page ?? 1
+  const pageSize = params.pageSize ?? 50
+  const search = new URLSearchParams()
+  if (params.category) search.set("category", params.category)
+  if (params.hasPrize === true) search.set("hasPrize", "true")
+  search.set("page", String(page - 1))
+  search.set("pageSize", String(pageSize))
+
+  const res = await fetch(`${API_BASE_URL}/photos?${search.toString()}`, {
+    next: { revalidate: 60, tags: ["gallery"] },
+  })
+  if (!res.ok) {
+    throw new Error(`Failed to fetch gallery photos: ${res.status}`)
+  }
+  return res.json()
 }
 
 export interface AdminPhotosFilters {
