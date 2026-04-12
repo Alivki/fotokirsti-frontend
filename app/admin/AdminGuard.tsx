@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useAuth } from "@/services/auth"
 
 function isNetworkError(err: unknown): boolean {
@@ -29,6 +30,16 @@ function isNetworkError(err: unknown): boolean {
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const { error } = useAuth()
   const networkError = error != null && isNetworkError(error)
+  const authError = error != null && !networkError
+
+  useEffect(() => {
+    if (authError) {
+      document.cookie = "logged_in=; Path=/; Max-Age=0; SameSite=Lax"
+      window.location.href = "/"
+    }
+  }, [authError])
+
+  if (authError) return null
 
   if (networkError) {
     return (

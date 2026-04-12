@@ -18,6 +18,9 @@ api.interceptors.response.use(
         typeof error.config?.url === "string" &&
         error.config.url.includes("auth/sign-in")
       if (!isSignIn) {
+        // Clear the hint cookie so middleware won't let the user back into
+        // /admin on refresh after their backend session has been revoked.
+        document.cookie = "logged_in=; Path=/; Max-Age=0; SameSite=Lax"
         window.location.href = "/"
       }
     }
