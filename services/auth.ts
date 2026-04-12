@@ -1,7 +1,6 @@
 "use client"
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { api } from "./axios"
 import { getErrorMessage } from "@/lib/utils"
@@ -35,6 +34,15 @@ async function fetchSession(): Promise<Session> {
   const { data } = await api.get("/auth/get-session", {
     timeout: AUTH_TIMEOUT_MS,
   })
+  // Better Auth returns 200 with a null body when the session is invalid
+  // or revoked. Turn that into an error so useAuth flips to isError and
+  // the hint-cookie optimism below no longer applies.
+  if (!data?.user) {
+    if (typeof document !== "undefined") {
+      document.cookie = "logged_in=; Path=/; Max-Age=0; SameSite=Lax"
+    }
+    throw new Error("no-session")
+  }
   return data
 }
 
@@ -68,9 +76,6 @@ export function useAuth() {
 }
 
 export function useLogin(redirectTo?: string) {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-
   return async (username: string, password: string): Promise<{ error?: string }> => {
     try {
       const { data: signInData } = await api.post("auth/sign-in/username", {
@@ -78,23 +83,19 @@ export function useLogin(redirectTo?: string) {
         password,
       })
 
-      // Better Auth sign-in returns the session directly — no need for a
-      // second round-trip to /auth/get-session. Populate the query cache so
-      // AdminGuard sees the user immediately.
-      const sessionPayload = signInData?.user
-        ? { user: signInData.user, session: signInData.session }
-        : signInData
-
-      if (!sessionPayload?.user) {
+      if (!signInData?.user) {
         return {
           error:
             "Innlogging fullført, men sesjon ble ikke opprettet. Sjekk tredjeparts cookies i nettleseren.",
         }
       }
 
-      queryClient.setQueryData(["auth", "session"], sessionPayload)
+      // Full page navigation so the Edge middleware sees the freshly-set
+      // `logged_in` hint cookie. router.push would kick off an RSC fetch
+      // that can race the Set-Cookie from the proxied sign-in response and
+      // get bounced back to /login by the middleware.
       const target = redirectTo?.startsWith("/") ? redirectTo : "/admin"
-      router.push(target)
+      window.location.href = target
       return {}
     } catch (error: unknown) {
       return { error: getErrorMessage(error) || "Feil passord eller brukernavn." }
