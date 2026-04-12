@@ -30,6 +30,7 @@ import {
   PRICELIST_HISTORY_QUERY_KEY,
   type PricelistWithUrl,
 } from "@/services/pricelist"
+import { revalidatePricelist } from "@/app/actions/revalidate"
 
 const PdfViewer = dynamic(
   () => import("@/components/admin/PdfViewer").then((m) => m.PdfViewer),
@@ -91,6 +92,7 @@ export default function PricelistPage() {
     },
     onSuccess: () => {
       toast.success("Prislisten er slettet")
+      void revalidatePricelist()
     },
     onError: (err, _id, context) => {
       if (context?.previous != null) {
@@ -150,9 +152,7 @@ export default function PricelistPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[120px] items-center justify-center text-muted-foreground">
-            Laster...
-          </div>
+          <PricelistPageSkeleton />
         ) : pricelist ? (
           <>
             <PricelistCard
@@ -211,6 +211,31 @@ export default function PricelistPage() {
         )}
       </div>
     </>
+  )
+}
+
+function PricelistPageSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-row gap-4">
+          <Skeleton className="h-20 w-20 shrink-0 rounded-lg" />
+          <div className="flex flex-col justify-center gap-2">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+        <div className="flex w-full flex-row items-stretch gap-2 shrink-0 sm:w-auto">
+          <Skeleton className="h-9 w-full rounded-md sm:w-32" />
+          <Skeleton className="h-9 w-12 shrink-0 rounded-md" />
+        </div>
+      </div>
+      <Skeleton className="h-4 w-40" />
+      <div className="min-w-0 w-full overflow-hidden rounded-lg border border-border bg-white px-4 py-4">
+        <Skeleton className="mx-auto aspect-[210/297] w-full max-w-2xl rounded-lg" />
+      </div>
+    </div>
   )
 }
 

@@ -1,9 +1,6 @@
 "use client"
 
-import { Loader2 } from "lucide-react"
 import { useAuth } from "@/services/auth"
-import { usePathname, useRouter } from "next/navigation"
-import { useEffect } from "react"
 
 function isNetworkError(err: unknown): boolean {
   if (!err || typeof err !== "object") return false
@@ -18,33 +15,20 @@ function isNetworkError(err: unknown): boolean {
   )
 }
 
+/**
+ * The proxy middleware already gates /admin/* by checking the `logged_in`
+ * hint cookie before any React renders. Reaching this component means the
+ * user is optimistically authenticated, so we render children immediately.
+ *
+ * The real session check still runs in the background via useAuth (React
+ * Query), and if the backend returns 401 the axios interceptor in
+ * services/axios.ts redirects to "/". The only thing AdminGuard handles
+ * is the network-error fallback so admin users see a clear "server is
+ * unreachable" message instead of a broken page.
+ */
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, error } = useAuth()
-  const router = useRouter()
-  const pathname = usePathname()
+  const { error } = useAuth()
   const networkError = error != null && isNetworkError(error)
-
-  useEffect(() => {
-    if (isLoading) return
-    if (!isAuthenticated && !networkError) {
-      const login = new URL("/login", window.location.origin)
-      login.searchParams.set("from", pathname)
-      router.replace(login.pathname + login.search)
-    }
-  }, [isAuthenticated, isLoading, networkError, router, pathname])
-
-  if (isLoading) {
-    return (
-      <div
-        className="flex flex-1 flex-col items-center justify-center gap-3 py-12"
-        aria-busy="true"
-        aria-label="Laster"
-      >
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Sjekker tilgang...</p>
-      </div>
-    )
-  }
 
   if (networkError) {
     return (
@@ -64,10 +48,6 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
         </button>
       </div>
     )
-  }
-
-  if (!isAuthenticated) {
-    return null
   }
 
   return <>{children}</>

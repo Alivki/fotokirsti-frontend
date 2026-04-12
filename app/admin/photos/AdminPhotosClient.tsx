@@ -23,6 +23,8 @@ import {
   deleteManyPhotos,
   ADMIN_PHOTOS_QUERY_KEY,
 } from "@/services/photos"
+import { revalidateGallery } from "@/app/actions/revalidate"
+import { getErrorMessage } from "@/lib/utils"
 
 export function AdminPhotosClient() {
   const filters = useAdminPhotoFilters()
@@ -61,16 +63,13 @@ export function AdminPhotosClient() {
       toast.success(
         ids.length === 1 ? "Bildet ble slettet" : `${ids.length} bilder ble slettet`
       )
+      void revalidateGallery()
     },
     onError: (err, _ids, context) => {
       if (context?.previous != null) {
         queryClient.setQueryData(queryKey, context.previous)
       }
-      const axiosErr = err as { response?: { data?: { message?: string } } }
-      const msg =
-        axiosErr?.response?.data?.message ??
-        (err instanceof Error ? err.message : "Sletting feilet")
-      toast.error(msg)
+      toast.error(getErrorMessage(err) || "Sletting feilet")
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_PHOTOS_QUERY_KEY })
@@ -90,13 +89,10 @@ export function AdminPhotosClient() {
           : `${count} ${count === 1 ? "bilde" : "bilder"} er avpublisert`
       )
       queryClient.invalidateQueries({ queryKey: ADMIN_PHOTOS_QUERY_KEY })
+      void revalidateGallery()
     },
     onError: (err) => {
-      const axiosErr = err as { response?: { data?: { message?: string } } }
-      const msg =
-        axiosErr?.response?.data?.message ??
-        (err instanceof Error ? err.message : "Oppdatering feilet")
-      toast.error(msg)
+      toast.error(getErrorMessage(err) || "Oppdatering feilet")
     },
   })
 

@@ -1,8 +1,5 @@
-"use client"
-
-import { useRef } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ArrowUpRight, Trophy } from "lucide-react"
 
 import { Header } from "@/components/navigation/header"
@@ -25,9 +22,6 @@ const CAROUSEL_IMAGES = [
 ]
 
 export default function Page() {
-  const router = useRouter()
-  const containerRef = useRef<HTMLDivElement>(null)
-
   return (
     <>
       <Header />
@@ -90,21 +84,19 @@ export default function Page() {
 
                 <div className="flex flex-row flex-nowrap gap-2 sm:gap-4">
                   <Button
-                    onClick={() => {
-                      containerRef.current?.scrollIntoView({ behavior: "smooth" })
-                    }}
+                    asChild
                     className="flex-1 min-w-0 shrink-0 md:min-w-52 md:flex-none md:w-auto"
                     size="lg"
                   >
-                    Ta kontakt
+                    <a href="#contact">Ta kontakt</a>
                   </Button>
                   <Button
-                    onClick={() => router.push("/gallery")}
+                    asChild
                     className="flex-1 min-w-0 shrink-0 bg-white md:min-w-52 md:flex-none md:w-auto"
                     variant="secondary"
                     size="lg"
                   >
-                    Se alle bilder
+                    <Link href="/gallery">Se alle bilder</Link>
                   </Button>
                 </div>
               </div>
@@ -173,12 +165,10 @@ export default function Page() {
         </FadeContent>
 
         <div className="container mx-auto mt-6 flex w-full items-center justify-center px-4">
-          <Button
-            onClick={() => router.push("/gallery?hasPrize=true")}
-            className="mt-4 w-full sm:w-64 md:w-auto"
-            size="lg"
-          >
-            Se alle mine premierte bilder
+          <Button asChild className="mt-4 w-full sm:w-64 md:w-auto" size="lg">
+            <Link href="/gallery?hasPrize=true">
+              Se alle mine premierte bilder
+            </Link>
           </Button>
         </div>
 
@@ -188,19 +178,15 @@ export default function Page() {
           </h2>
           <MultiImageCarousel images={CAROUSEL_IMAGES} />
           <div className="flex w-full items-center justify-center px-4 sm:px-2">
-            <Button
-              onClick={() => router.push("/gallery")}
-              size="lg"
-              className="w-full md:w-auto"
-            >
-              Se alle bilder
+            <Button asChild size="lg" className="w-full md:w-auto">
+              <Link href="/gallery">Se alle bilder</Link>
             </Button>
           </div>
         </div>
       </section>
 
       <main className="container mx-auto space-y-16 px-4 pt-12 pb-16 sm:px-2 lg:pt-14 xl:space-y-24 xl:pb-32">
-        <div ref={containerRef} className="scroll-mt-16 space-y-12">
+        <div id="contact" className="scroll-mt-16 space-y-12">
           <FAQ />
           <ContactCard />
         </div>

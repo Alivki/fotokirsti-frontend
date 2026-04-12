@@ -39,3 +39,12 @@ export const contactFormSchema = z.object({
 })
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>
+
+/** Server-side schema for the /api/contact route — matches the backend payload shape. */
+export const contactRequestSchema = z.object({
+  firstName: z.string().trim().min(1).max(200),
+  email: z.string().trim().min(1).max(320).email(),
+  phone_number: phoneNumberSchema,
+  category: contactCategoryEnum,
+  message: z.string().trim().min(1).max(5000),
+})

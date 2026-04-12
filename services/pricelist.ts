@@ -1,4 +1,5 @@
 import { api } from "./axios"
+import { API_BASE_URL } from "@/lib/config"
 
 export const PRICELIST_QUERY_KEY = ["pricelist"] as const
 export const PRICELIST_HISTORY_QUERY_KEY = ["pricelist", "history"] as const
@@ -22,6 +23,17 @@ export interface CreatePricelistResponse extends PricelistWithUrl {
 export const getCurrentPricelist = async (): Promise<PricelistWithUrl> => {
   const { data } = await api.get<PricelistWithUrl>("/pricelist")
   return data
+}
+
+export async function getCurrentPricelistISR(): Promise<PricelistWithUrl | null> {
+  const res = await fetch(`${API_BASE_URL}/pricelist`, {
+    next: { revalidate: 60, tags: ["pricelist"] },
+  })
+  if (res.status === 404) return null
+  if (!res.ok) {
+    throw new Error(`Failed to fetch pricelist: ${res.status}`)
+  }
+  return res.json()
 }
 
 export const createPricelist = async (file: File): Promise<CreatePricelistResponse> => {

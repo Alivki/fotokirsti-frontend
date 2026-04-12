@@ -1,49 +1,15 @@
-"use client"
-
-import dynamic from "next/dynamic"
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
 import { FileText } from "lucide-react"
 
 import { Header } from "@/components/navigation/header"
 import { Footer } from "@/components/navigation/footer"
 import { FadeContent } from "@/components/ui/fade-content"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import {
-  getCurrentPricelist,
-  PRICELIST_QUERY_KEY,
-} from "@/services/pricelist"
+import { getCurrentPricelistISR } from "@/services/pricelist"
+import { PdfViewerClient } from "./PdfViewerClient"
 
-const PdfViewer = dynamic(
-  () => import("@/components/admin/PdfViewer").then((m) => m.PdfViewer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full px-4 py-8">
-        <Skeleton
-          className="mx-auto aspect-[210/297] w-full max-w-2xl rounded-lg"
-          aria-label="Laster prisliste..."
-        />
-      </div>
-    ),
-  }
-)
-
-export default function PricelistPage() {
-  const { data: pricelist, isLoading, error, isError } = useQuery({
-    queryKey: PRICELIST_QUERY_KEY,
-    queryFn: () => getCurrentPricelist(),
-    retry: (failureCount, err) => {
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const res = (err as { response?: { status?: number } }).response
-        if (res?.status === 404) return false
-      }
-      return failureCount < 2
-    },
-  })
-
-  const noPricelist = isError || (!isLoading && !pricelist)
+export default async function PricelistPage() {
+  const pricelist = await getCurrentPricelistISR()
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -62,12 +28,13 @@ export default function PricelistPage() {
         </FadeContent>
 
         <FadeContent duration={1000}>
-          {isLoading ? (
-            <div className="flex flex-col gap-6">
-              <Skeleton className="h-24 w-full max-w-2xl rounded-lg" />
-              <Skeleton className="aspect-[210/297] w-full max-w-2xl rounded-lg" />
+          {pricelist ? (
+            <div className="mx-auto flex max-w-2xl flex-col gap-6">
+              <div className="overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+                <PdfViewerClient fileUrl={pricelist.fileUrl} />
+              </div>
             </div>
-          ) : noPricelist ? (
+          ) : (
             <div className="mx-auto flex max-w-2xl flex-col items-center justify-center rounded-lg border border-border bg-secondary/50 px-6 py-16 text-center">
               <div className="mb-4 rounded-full bg-muted p-4">
                 <FileText className="size-12 text-muted-foreground" strokeWidth={1.5} />
@@ -83,13 +50,7 @@ export default function PricelistPage() {
                 <Link href="/">Tilbake til forsiden</Link>
               </Button>
             </div>
-          ) : pricelist ? (
-            <div className="mx-auto flex max-w-2xl flex-col gap-6">
-              <div className="overflow-hidden rounded-lg border border-border bg-white shadow-sm">
-                <PdfViewer fileUrl={pricelist.fileUrl} className="w-full px-4 py-6" />
-              </div>
-            </div>
-          ) : null}
+          )}
         </FadeContent>
       </main>
       <Footer />

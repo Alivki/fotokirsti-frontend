@@ -1,19 +1,32 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 /**
- * We DO NOT fetch the session here.
- * In a cross-domain setup (frontend.up.railway.app vs backend.up.railway.app),
- * the Next.js server cannot see the backend cookies.
+ * Route protection using the `logged_in` hint cookie set by the backend
+ * on successful sign-in. This runs on the Edge before any React rendering,
+ * so unauthenticated users never see a flash of admin content.
+ *
+ * The hint cookie is a boolean flag only — it carries no secret. The real
+ * session token (httpOnly) is still validated by the backend on every
+ * API request. If a user has only the hint cookie but no valid session,
+ * the API will return 401 and the axios interceptor will redirect.
  */
 export function proxy(request: NextRequest) {
-  // Just let the request through to the page.
-  // The client-side AdminGuard will handle the logic because
-  // the browser is the only one that actually has the session cookies.
+  const isLoggedIn = request.cookies.get("logged_in")?.value === "1"
+  const { pathname, search } = request.nextUrl
+
+  if (pathname.startsWith("/admin") && !isLoggedIn) {
+    const loginUrl = new URL("/login", request.url)
+    loginUrl.searchParams.set("from", pathname + search)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  if (pathname === "/login" && isLoggedIn) {
+    return NextResponse.redirect(new URL("/admin", request.url))
+  }
+
   return NextResponse.next()
 }
 
-// Only run this proxy for admin routes to keep the rest of the site fast
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/login"],
 }
