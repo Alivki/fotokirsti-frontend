@@ -25,15 +25,22 @@ export const getCurrentPricelist = async (): Promise<PricelistWithUrl> => {
   return data
 }
 
+/** Returns null on any failure so a backend outage can't break `next build`; ISR retries every 60s. */
 export async function getCurrentPricelistISR(): Promise<PricelistWithUrl | null> {
-  const res = await fetch(`${API_BASE_URL}/pricelist`, {
-    next: { revalidate: 60, tags: ["pricelist"] },
-  })
-  if (res.status === 404) return null
-  if (!res.ok) {
-    throw new Error(`Failed to fetch pricelist: ${res.status}`)
+  try {
+    const res = await fetch(`${API_BASE_URL}/pricelist`, {
+      next: { revalidate: 60, tags: ["pricelist"] },
+    })
+    if (res.status === 404) return null
+    if (!res.ok) {
+      console.error(`Failed to fetch pricelist: ${res.status}`)
+      return null
+    }
+    return res.json()
+  } catch (err) {
+    console.error("Failed to fetch pricelist:", err)
+    return null
   }
-  return res.json()
 }
 
 export const createPricelist = async (file: File): Promise<CreatePricelistResponse> => {
